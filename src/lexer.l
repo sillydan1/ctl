@@ -7,6 +7,13 @@ int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
 
 #undef YY_INPUT
 #define YY_INPUT(buf,result,maxsize) readInputForLexer(buf,&result,maxsize)
+
+void ProvideToken() {
+    if(yylval.tokenString == nullptr) yylval.tokenString = new std::string("");
+    *yylval.tokenString = ""; // reset the string (This is memory safe, dw)
+    *yylval.tokenString += yytext;
+}
+
 %} 
 
 /* TODO: use %option reentrant to become threadsafe later (This will require some refactoring though) */
@@ -14,24 +21,24 @@ int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
 %%
 
 [ \t]     									{ /* skip blanks and tabs */ }
-&&|\|\||and|or								{ return BOOLEAN_LOGIC_OPERATOR; }
-!											{ return NEGATION; 				 }
-(<=|<|!=|==|>=|>)							{ return COMPARATOR; 			 }
-deadlock 									{ return DEADLOCK; 				 }
-\(											{ return LPAREN; 				 }
-\)											{ return RPAREN; 				 }
-E 											{ return EXISTS; 				 }
-A 											{ return FORALL; 				 }
-F 											{ return FINALLY; 				 }
-G 											{ return GLOBALLY; 				 }
-X 											{ return NEXT; 					 }
-U 											{ return UNTIL; 				 }
-true|false									{ return LITERAL; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*(\(.*\))?\.L[0-9]+	{ return LOCATION; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*						{ return VAR_IDENTIFIER; 		 }
-[0-9]+										{ return LITERAL; 				 }
-(\"[\s]*.*?[\s]*\")							{ return LITERAL; 				 }
-\n 											{ return NL; 					 }
+&&|\|\||and|or								{ ProvideToken(); return BOOLEAN_LOGIC_OPERATOR; }
+!											{ ProvideToken(); return NEGATION; 				 }
+(<=|<|!=|==|>=|>)							{ ProvideToken(); return COMPARATOR; 			 }
+deadlock 									{ ProvideToken(); return DEADLOCK; 				 }
+\(											{ ProvideToken(); return LPAREN; 				 }
+\)											{ ProvideToken(); return RPAREN; 				 }
+E 											{ ProvideToken(); return EXISTS; 				 }
+A 											{ ProvideToken(); return FORALL; 				 }
+F 											{ ProvideToken(); return FINALLY; 				 }
+G 											{ ProvideToken(); return GLOBALLY; 				 }
+X 											{ ProvideToken(); return NEXT; 					 }
+U 											{ ProvideToken(); return UNTIL; 				 }
+true|false									{ ProvideToken(); return LITERAL; 				 }
+[a-zA-Z_][a-zA-Z0-9_]*(\(.*\))?\.L[0-9]+	{ ProvideToken(); return LOCATION; 				 }
+[a-zA-Z_][a-zA-Z0-9_]*						{ ProvideToken(); return VAR_IDENTIFIER; 		 }
+[0-9]+										{ ProvideToken(); return LITERAL; 				 }
+(\"[\s]*.*?[\s]*\")							{ ProvideToken(); return LITERAL; 				 }
+\n 											{ ProvideToken(); return NL; 					 }
 .  											{  				                 }
 
 %% 
