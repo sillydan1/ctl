@@ -35,26 +35,26 @@ Query* ParseQuery(const std::string&);
 /* Rule Section */
 %%
 
-stmt: query								{ parsedQuery = $1; }
+stmt: query				{ parsedQuery = $1; }
 	;
-query: EXISTS quantifier 				{ $$ = new Exists(*$2); }
-	 | FORALL quantifier 				{ $$ = new Forall(*$2); }
+query: EXISTS quantifier 		{ $$ = new Exists(*$2); }
+	 | FORALL quantifier 		{ $$ = new Forall(*$2); }
 	 ;
-quantifier: FINALLY phi					{ $$ = new Finally(*$2); }
-	 	  | GLOBALLY phi				{ $$ = new Globally(*$2); }
-	 	  | NEXT phi 					{ $$ = new Next(*$2); }
-	 	  | UNTIL phi					{ $$ = new Until(*$2); }
+quantifier: FINALLY phi			{ $$ = new Finally(*$2); }
+	 	  | GLOBALLY phi	{ $$ = new Globally(*$2); }
+	 	  | NEXT phi 		{ $$ = new Next(*$2); }
+	 	  | UNTIL phi		{ $$ = new Until(*$2); }
 	 	  ;
-phi: phi BOOLEAN_LOGIC_OPERATOR phi 	{ $$ = new LogicOperator("todo", *$1, *$3); }
-   | psi 								{ $$ = $1; }
-   | LPAREN phi RPAREN					{ $$ = new SubExpression("()", *$2); }
-   | DEADLOCK 							{ $$ = new Deadlock("deadlock"); }
+phi: phi BOOLEAN_LOGIC_OPERATOR phi 	{ $$ = new LogicOperator("", *$1, *$3); }
+   | psi 				{ $$ = $1; }
+   | LPAREN phi RPAREN			{ $$ = new SubExpression("()", *$2); }
+   | DEADLOCK 				{ $$ = new Deadlock("deadlock"); }
    ;
 psi: comparable COMPARATOR comparable 	{ $$ = new Comparator("todo", *$1, *$3); }
-   | LOCATION							{ $$ = new LocationIdentifier("todo"); }
+   | LOCATION				{ $$ = new LocationIdentifier("todo"); }
    ;
-comparable: VAR_IDENTIFIER 				{ $$ = new VariableIdentifier("todo"); }
-		  | LITERAL 					{ $$ = new Literal("todo"); }
+comparable: VAR_IDENTIFIER 		{ $$ = new VariableIdentifier("todo"); }
+		  | LITERAL 		{ $$ = new Literal("todo"); }
 		  ;
 
 %%

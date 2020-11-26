@@ -37,7 +37,7 @@ struct LogicOperator : Expression, TypeStringable<LogicOperator> {
 	OperatorType type;
 	Expression left, right;
 	static OperatorType FromString(const std::string& string) {
-		printf("Implement me, please\n");
+		printf("Implement me, please %s\n", string.c_str());
 		return OperatorType::AND;
 	}
 	LogicOperator(const std::string& str, Expression l, Expression r) : Expression{str}, type{FromString(str)}, left{std::move(l)}, right{std::move(r)} {}

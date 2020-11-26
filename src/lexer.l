@@ -14,25 +14,25 @@ int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
 %%
 
 [ \t]     									{ /* skip blanks and tabs */ }
-&&|\|\||and|or								{ printf("BOOLEAN_LOGIC_OPERATOR \n"); return BOOLEAN_LOGIC_OPERATOR; }
-!											{ printf("NEGATION \n"); return NEGATION; 				 }
-(<=|<|!=|==|>=|>)							{ printf("COMPARATOR \n"); return COMPARATOR; 			 }
-deadlock 									{ printf("DEADLOCK \n"); return DEADLOCK; 				 }
-\(											{ printf("LPAREN \n"); return LPAREN; 				 }
-\)											{ printf("RPAREN \n"); return RPAREN; 				 }
-E 											{ printf("EXISTS \n"); return EXISTS; 				 }
-A 											{ printf("FORALL \n"); return FORALL; 				 }
-F 											{ printf("FINALLY \n"); return FINALLY; 				 }
-G 											{ printf("GLOBALLY \n"); return GLOBALLY; 				 }
-X 											{ printf("NEXT \n"); return NEXT; 					 }
-U 											{ printf("UNTIL \n"); return UNTIL; 				 }
-true|false									{ printf("LITERAL \n"); return LITERAL; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*(\(.*\))?\.L[0-9]+	{ printf("LOCATION \n"); return LOCATION; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*						{ printf("VAR_IDENTIFIER \n"); return VAR_IDENTIFIER; 		 }
-[0-9]+										{ printf("LITERAL \n"); return LITERAL; 				 }
-(\"[\s]*.*?[\s]*\")							{ printf("LITERAL \n"); return LITERAL; 				 }
-\n 											{ printf("NL \n"); return NL; 					 }
-.  											{ printf("Error"); 				 }
+&&|\|\||and|or								{ return BOOLEAN_LOGIC_OPERATOR; }
+!											{ return NEGATION; 				 }
+(<=|<|!=|==|>=|>)							{ return COMPARATOR; 			 }
+deadlock 									{ return DEADLOCK; 				 }
+\(											{ return LPAREN; 				 }
+\)											{ return RPAREN; 				 }
+E 											{ return EXISTS; 				 }
+A 											{ return FORALL; 				 }
+F 											{ return FINALLY; 				 }
+G 											{ return GLOBALLY; 				 }
+X 											{ return NEXT; 					 }
+U 											{ return UNTIL; 				 }
+true|false									{ return LITERAL; 				 }
+[a-zA-Z_][a-zA-Z0-9_]*(\(.*\))?\.L[0-9]+	{ return LOCATION; 				 }
+[a-zA-Z_][a-zA-Z0-9_]*						{ return VAR_IDENTIFIER; 		 }
+[0-9]+										{ return LITERAL; 				 }
+(\"[\s]*.*?[\s]*\")							{ return LITERAL; 				 }
+\n 											{ return NL; 					 }
+.  											{  				                 }
 
 %% 
   
