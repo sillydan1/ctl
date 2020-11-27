@@ -14,7 +14,14 @@ include_directories(
 		include
 )
 
-add_executable(demo
-        src/demo.cpp
+add_library(${PROJECT_NAME}
 	${BISON_MyParser_OUTPUTS}
-  	${FLEX_MyScanner_OUTPUTS} src/types.cpp)
+	${FLEX_MyScanner_OUTPUTS}
+	src/types.cpp
+)
+
+add_executable(demo
+	src/demo.cpp
+)
+
+target_link_libraries(demo ${PROJECT_NAME})
