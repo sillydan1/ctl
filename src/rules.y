@@ -48,20 +48,20 @@ Query* ParseQuery(const std::string&);
 
 stmt: query				                { parsedQuery = $1; }
 	;
-query: EXISTS quantifier 	            { $$ = new Exists(*$2); }
-	 | FORALL quantifier 	            { $$ = new Forall(*$2); }
+query: EXISTS quantifier 	            { $$ = new Exists($2); }
+	 | FORALL quantifier 	            { $$ = new Forall($2); }
 	 ;
-quantifier: FINALLY phi		            { $$ = new Finally(*$2); }
-	 	  | GLOBALLY phi	            { $$ = new Globally(*$2); }
-	 	  | NEXT phi 		            { $$ = new Next(*$2); }
-	 	  | UNTIL phi		            { $$ = new Until(*$2); }
+quantifier: FINALLY phi		            { $$ = new Finally($2); }
+	 	  | GLOBALLY phi	            { $$ = new Globally($2); }
+	 	  | NEXT phi 		            { $$ = new Next($2); }
+	 	  | UNTIL phi		            { $$ = new Until($2); }
 	 	  ;
-phi: phi bool_op phi 	                { $$ = new LogicOperator(*$2, *$1, *$3); }
+phi: phi bool_op phi 	                { $$ = new LogicOperator(*$2, $1, $3); }
    | psi 				                { $$ = $1; }
-   | LPAREN phi RPAREN		            { $$ = new SubExpression("()", *$2); }
+   | LPAREN phi RPAREN		            { $$ = new SubExpression("()", $2); }
    | DEADLOCK 				            { $$ = new Deadlock("deadlock"); }
    ;
-psi: comparable comp_op comparable 	    { $$ = new Comparator(*$2, *$1, *$3); }
+psi: comparable comp_op comparable 	    { $$ = new Comparator(*$2, $1, $3); }
    | loc				                { $$ = new LocationIdentifier(*$1); }
    ;
 comparable: var_ident 	                { $$ = new VariableIdentifier(*$1); }
