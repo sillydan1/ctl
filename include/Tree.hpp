@@ -29,6 +29,10 @@ struct Tree {
         f(root);
         for(auto& c : children) c.tree_apply(f);
     }
+    void tree_apply(std::function<void(const T&)> f) const {
+        f(root);
+        for(auto& c : children) c.tree_apply(f);
+    }
 };
 
 template<typename T>
