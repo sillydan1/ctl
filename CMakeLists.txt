@@ -17,5 +17,4 @@ include_directories(
 add_executable(demo
         src/demo.cpp
 	${BISON_MyParser_OUTPUTS}
-  	${FLEX_MyScanner_OUTPUTS}
-		include/QueryPrintVisitor.cpp include/QueryPrintVisitor.h)
+  	${FLEX_MyScanner_OUTPUTS} src/types.cpp)

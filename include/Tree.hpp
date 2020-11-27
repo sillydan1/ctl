@@ -11,10 +11,10 @@ struct Tree {
 
     Tree() = delete;
     Tree(const T& r) : root(r), children{} {}
-    Tree(T&& r) : root{std::forward(r)}, children{} {}
+    Tree(T&& r) : root{std::forward<T>(r)}, children{} {}
 
     /** * Moves the provided subtree into this tree's children */
-    inline void emplace(Tree<T>&& t) { children.emplace_back(std::move(t)); }
+    inline void emplace(Tree<T>&& t) { children.emplace_back(std::forward(t)); }
     /** * Copies the provided subtree into this tree's children */
     void insert(const Tree<T>& t) {
         children.push_back(t);

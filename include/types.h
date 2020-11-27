@@ -14,21 +14,8 @@ enum class NodeType_t : unsigned int {
     UNKNOWN
 };
 
-NodeType_t FromString(const std::string& string) {
-    // Comparator
-    if(string == "<") return NodeType_t::CompLess;
-    if(string == "<=") return NodeType_t::CompLessEq;
-    if(string == "!=") return NodeType_t::CompNeq;
-    if(string == "==") return NodeType_t::CompEq;
-    if(string == ">=") return NodeType_t::CompGreaterEq;
-    if(string == ">") return NodeType_t::CompGreater;
-    // Logic and / or
-    if(string == "&&") return NodeType_t::LogicAnd;
-    if(string == "and")return NodeType_t::LogicAnd;
-    if(string == "||") return NodeType_t::LogicOr;
-    if(string == "or") return NodeType_t::LogicOr;
-    return NodeType_t::UNKNOWN; // There is something very wrong, my dude
-}
+NodeType_t FromString(const std::string& string);
+std::string ConvertToString(const NodeType_t&);
 
 struct ASTNode {
     NodeType_t type;
