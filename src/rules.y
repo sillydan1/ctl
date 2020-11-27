@@ -5,36 +5,26 @@
 #include <cstring>
 
 #include "types.h" // TODO: This should be correct later
+#include <Tree.hpp>
 
 extern int yylex();
 extern int yylex_destroy();
 extern void scanMyThing(const std::string&);
 extern int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
 
-Query* parsedQuery = nullptr;
+Tree<ASTNode>* parsedQuery = nullptr;
 int yyerror(char*);
 extern char* yytext;
-Query* ParseQuery(const std::string&);
-
-
-// new LogicOperator(yylval.tokenString, *$1, *$3);
-#define NEW_OBJ_W_STR_N(classname, str) classname(str); free(str)
-#define NEW_OBJ_W_STR(classname, str, ...) classname(str, __VA_ARGS__); free(str)
-
+Tree<ASTNode>* ParseQuery(const std::string&);
 %}
  
 /* Rules output */
 %union {
-	Expression* expression;
-	Quantifier* quantifier;
-	Query*		query;
+	Tree<ASTNode>* tree;
     std::string* tokenString;
 }
 /* Rules types */
-%type <expression> phi psi comparable
-%type <quantifier> quantifier
-%type <query> query stmt
-
+%type <tree> phi psi comparable quantifier query stmt
 %type <tokenString> bool_op comp_op loc lit var_ident
 
 /* Token specifications */
@@ -48,27 +38,26 @@ Query* ParseQuery(const std::string&);
 
 stmt: query				                { parsedQuery = $1; }
 	;
-query: EXISTS quantifier 	            { $$ = new Exists(*$2); }
-	 | FORALL quantifier 	            { $$ = new Forall(*$2); }
+query: EXISTS quantifier 	            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Exists, "E"}}; n->insert(*$2); $$ = n; }
+	 | FORALL quantifier 	            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Forall, "A"}}; n->insert(*$2); $$ = n; }
 	 ;
-quantifier: FINALLY phi		            { $$ = new Finally(*$2); }
-	 	  | GLOBALLY phi	            { $$ = new Globally(*$2); }
-	 	  | NEXT phi 		            { $$ = new Next(*$2); }
-	 	  | UNTIL phi		            { $$ = new Until(*$2); }
+quantifier: FINALLY phi		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Finally, "F"}}; n->insert(*$2); $$ = n; }
+	 	  | GLOBALLY phi	            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Globally, "G"}}; n->insert(*$2); $$ = n; }
+	 	  | NEXT phi 		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Next, "X"}}; n->insert(*$2); $$ = n; }
+	 	  | UNTIL phi		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Until, "U"}}; n->insert(*$2); $$ = n; }
 	 	  ;
-phi: phi bool_op phi 	                { $$ = new LogicOperator(*$2, *$1, *$3); }
+phi: phi bool_op phi 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
    | psi 				                { $$ = $1; }
-   | LPAREN phi RPAREN		            { $$ = new SubExpression("()", *$2); }
-   | DEADLOCK 				            { $$ = new Deadlock("deadlock"); }
+   | LPAREN phi RPAREN		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::SubExpr, "()"}}; n->insert(*$2); $$ = n; }
+   | DEADLOCK 				            { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Deadlock, "deadlock"}}; }
    ;
-psi: comparable comp_op comparable 	    { $$ = new Comparator(*$2, *$1, *$3); }
-   | loc				                { $$ = new LocationIdentifier(*$1); }
+psi: comparable comp_op comparable 	    { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
+   | loc				                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Location, *$1}}; }
    ;
-comparable: var_ident 	                { $$ = new VariableIdentifier(*$1); }
-		  | lit 		                { $$ = new Literal(*$1); }
+comparable: var_ident 	                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Var, *$1}}; }
+		  | lit 		                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Literal, *$1}}; }
 		  ;
 
-/* This is a stupid hack, and likely a memory leak, but I am running out of time here so... */
 bool_op: BOOLEAN_LOGIC_OPERATOR { $$ = new std::string(*yylval.tokenString); } ;
 comp_op: COMPARATOR             { $$ = new std::string(*yylval.tokenString); } ;
 loc: LOCATION                   { $$ = new std::string(*yylval.tokenString); } ;
@@ -78,10 +67,11 @@ var_ident: VAR_IDENTIFIER       { $$ = new std::string(*yylval.tokenString); } ;
 %%
 /* Code section */
 int yyerror(char *msg) { 
-	printf("invalid Query: %s\n", msg); 
+	printf("invalid Query: %s\n", msg);
+	return 0;
 }
 
-Query* ParseQuery(const std::string& str) {
+Tree<ASTNode>* ParseQuery(const std::string& str) {
 	scanMyThing(str);
 	return parsedQuery;
 }

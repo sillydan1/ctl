@@ -1,6 +1,7 @@
 %{
 #include <types.h>
-#include "parser.hpp" 
+#include <Tree.hpp>
+#include "parser.hpp"
 #include <cstring>
 
 int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
