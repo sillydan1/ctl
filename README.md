@@ -22,8 +22,8 @@ make
 Download the files (or git submoule it) and add it as a subdirectory in your CMakeLists.txt file like so: (Make sure add the correct paths)
 
 ```
-include_directories(local/path/to/CTLParser/include)
+include_directories(local/path/to/CTLParser/include) # Not technically needed
 add_subdirectory(local/path/to/CTLParser)
 
-target_link_libraries(yourprojectname CTLParser)
+target_link_libraries(yourprojectname ctlparser)
 ```
