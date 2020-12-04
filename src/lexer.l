@@ -52,7 +52,7 @@ int globalReadOffset;
 char *globalInputText = nullptr;
 
 void scanMyThing(const std::string& ss) {
-	globalInputText = (char*)malloc(ss.size()+30);
+	globalInputText = (char*)malloc(ss.length()+30);
 	globalReadOffset = 0;
 	strcpy(globalInputText, ss.c_str());
 	yyparse();

@@ -72,6 +72,8 @@ int yyerror(char *msg) {
 }
 
 Tree<ASTNode>* ParseQuery(const std::string& str) {
+    if(parsedQuery != nullptr)
+        parsedQuery = nullptr;
 	scanMyThing(str);
 	return parsedQuery;
 }
