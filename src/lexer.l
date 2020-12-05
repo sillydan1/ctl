@@ -23,8 +23,8 @@ void ProvideToken() {
 
 [ \t]     									{ /* skip blanks and tabs */ }
 &&|\|\||and|or								{ ProvideToken(); return BOOLEAN_LOGIC_OPERATOR; }
-!											{ ProvideToken(); return NEGATION; 				 }
 (<=|<|!=|==|>=|>)							{ ProvideToken(); return COMPARATOR; 			 }
+!											{ ProvideToken(); return NEGATION; 				 }
 deadlock 									{ ProvideToken(); return DEADLOCK; 				 }
 \(											{ ProvideToken(); return LPAREN; 				 }
 \)											{ ProvideToken(); return RPAREN; 				 }
@@ -35,10 +35,11 @@ G 											{ ProvideToken(); return GLOBALLY; 				 }
 X 											{ ProvideToken(); return NEXT; 					 }
 U 											{ ProvideToken(); return UNTIL; 				 }
 true|false									{ ProvideToken(); return LITERAL; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*(\(.*\))?\.L[0-9]+	{ ProvideToken(); return LOCATION; 				 }
-[a-zA-Z_][a-zA-Z0-9_]*						{ ProvideToken(); return VAR_IDENTIFIER; 		 }
+[a-zA-Z_][a-zA-Z0-9_€ðđł]*(\(.*\))?\.L[0-9]+ { ProvideToken(); return LOCATION; 			 }
+[a-zA-Z_][a-zA-Z0-9_€ðđł]*					{ ProvideToken(); return VAR_IDENTIFIER; 		 }
 [0-9]+										{ ProvideToken(); return LITERAL; 				 }
 (\"[\s]*.*?[\s]*\")							{ ProvideToken(); return LITERAL; 				 }
+(\+|\-|\*|\/)                               { ProvideToken(); return OPERATOR;               }
 \n 											{ ProvideToken(); return NL; 					 }
 .  											{  				                 }
 
@@ -52,11 +53,14 @@ int globalReadOffset;
 char *globalInputText = nullptr;
 
 void scanMyThing(const std::string& ss) {
-	globalInputText = (char*)malloc(ss.length()+30);
+	globalInputText = (char*)calloc(ss.length()+30, 1);
 	globalReadOffset = 0;
-	strcpy(globalInputText, ss.c_str());
+	memcpy(globalInputText, ss.c_str(), ss.size());
+	printf("Parsing '%s'\n", globalInputText);
+	YY_FLUSH_BUFFER;
 	yyparse();
 	free(globalInputText);
+	BEGIN (INITIAL); // Reset the parser
 }
 
 int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead ) {

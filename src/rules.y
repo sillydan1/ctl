@@ -13,7 +13,7 @@ extern void scanMyThing(const std::string&);
 extern int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
 
 Tree<ASTNode>* parsedQuery = nullptr;
-int yyerror(char*);
+int yyerror(char const*);
 extern char* yytext;
 Tree<ASTNode>* ParseQuery(const std::string&);
 %}
@@ -24,11 +24,11 @@ Tree<ASTNode>* ParseQuery(const std::string&);
     std::string* tokenString;
 }
 /* Rules types */
-%type <tree> phi psi comparable quantifier query stmt
-%type <tokenString> bool_op comp_op loc lit var_ident
+%type <tree> phi psi comparable quantifier query stmt expr
+%type <tokenString> bool_op comp_op loc lit var_ident operator
 
 /* Token specifications */
-%token LITERAL VAR_IDENTIFIER LOCATION BOOLEAN_LOGIC_OPERATOR NEGATION COMPARATOR DEADLOCK LPAREN RPAREN
+%token LITERAL VAR_IDENTIFIER LOCATION BOOLEAN_LOGIC_OPERATOR NEGATION COMPARATOR DEADLOCK LPAREN RPAREN OPERATOR
 %token EXISTS FORALL FINALLY GLOBALLY NEXT UNTIL
 %token NL
 /* Start at stmt rule */
@@ -51,22 +51,27 @@ phi: phi bool_op phi 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}
    | LPAREN phi RPAREN		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::SubExpr, "()"}}; n->insert(*$2); $$ = n; }
    | DEADLOCK 				            { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Deadlock, "deadlock"}}; }
    ;
-psi: comparable comp_op comparable 	    { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
+psi: expr comp_op expr 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
    | loc				                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Location, *$1}}; }
    ;
 comparable: var_ident 	                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Var, *$1}}; }
 		  | lit 		                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Literal, *$1}}; }
 		  ;
+expr: comparable                        { $$ = $1; }
+    | expr operator expr                { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Operator, *$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
+    | LPAREN comparable RPAREN          { $$ = $2; }
+    ;
 
 bool_op: BOOLEAN_LOGIC_OPERATOR { $$ = new std::string(*yylval.tokenString); } ;
 comp_op: COMPARATOR             { $$ = new std::string(*yylval.tokenString); } ;
 loc: LOCATION                   { $$ = new std::string(*yylval.tokenString); } ;
 lit: LITERAL                    { $$ = new std::string(*yylval.tokenString); } ;
 var_ident: VAR_IDENTIFIER       { $$ = new std::string(*yylval.tokenString); } ;
+operator: OPERATOR              { $$ = new std::string(*yylval.tokenString); } ;
 
 %%
 /* Code section */
-int yyerror(char *msg) { 
+int yyerror(char const*msg) {
 	printf("invalid Query: %s\n", msg);
 	return 0;
 }

@@ -8,6 +8,7 @@ enum class NodeType_t : unsigned int {
     LogicAnd, LogicOr,
     Negation,
     CompLess, CompLessEq, CompNeq, CompEq, CompGreater, CompGreaterEq,
+    Operator,
     SubExpr,
     Finally, Globally, Next, Until,
     Exists, Forall,
