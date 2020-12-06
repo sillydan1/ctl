@@ -56,7 +56,6 @@ void scanMyThing(const std::string& ss) {
 	globalInputText = (char*)calloc(ss.length()+30, 1);
 	globalReadOffset = 0;
 	memcpy(globalInputText, ss.c_str(), ss.size());
-	printf("Parsing '%s'\n", globalInputText);
 	YY_FLUSH_BUFFER;
 	yyparse();
 	free(globalInputText);

@@ -16,6 +16,14 @@ Tree<ASTNode>* parsedQuery = nullptr;
 int yyerror(char const*);
 extern char* yytext;
 Tree<ASTNode>* ParseQuery(const std::string&);
+
+enum VerbosityLevel {
+    V_SILENT = 0,
+    V_ERRORS = 1,
+    V_ALL = 2
+};
+
+void SetVerbosity(unsigned int verbosityLevel);
 %}
  
 /* Rules output */
@@ -71,14 +79,23 @@ operator: OPERATOR              { $$ = new std::string(*yylval.tokenString); } ;
 
 %%
 /* Code section */
+unsigned int vlvl = V_ALL;
+
 int yyerror(char const*msg) {
-	printf("invalid Query: %s\n", msg);
+    if(vlvl >= V_ERRORS)
+	    printf("invalid Query: %s\n", msg);
 	return 0;
 }
 
 Tree<ASTNode>* ParseQuery(const std::string& str) {
     if(parsedQuery != nullptr)
         parsedQuery = nullptr;
+    if(vlvl >= V_ALL)
+        printf("Parsing '%s'\n", str.c_str());
 	scanMyThing(str);
 	return parsedQuery;
+}
+
+void SetVerbosity(unsigned int level) {
+    vlvl = level;
 }
