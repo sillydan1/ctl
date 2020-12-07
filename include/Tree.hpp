@@ -10,8 +10,8 @@ struct Tree {
     std::vector<Tree<T>> children;
 
     Tree() = delete;
-    Tree(const T& r) : root(r), children{} {}
-    Tree(T&& r) : root{std::forward<T>(r)}, children{} {}
+    explicit Tree(const T& r) : root(r), children{} {}
+    explicit Tree(T&& r) : root{std::forward<T>(r)}, children{} {}
 
     /** * Moves the provided subtree into this tree's children */
     inline void emplace(Tree<T>&& t) { children.emplace_back(std::forward(t)); }
@@ -31,6 +31,10 @@ struct Tree {
     }
     void tree_apply(std::function<void(const T&)> f) const {
         f(root);
+        for(auto& c : children) c.tree_apply(f);
+    }
+    void tree_apply(std::function<void(const Tree<T>&)> f) const {
+        f(*this);
         for(auto& c : children) c.tree_apply(f);
     }
 };
