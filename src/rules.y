@@ -56,6 +56,7 @@ quantifier: FINALLY phi		            { auto* n = new Tree<ASTNode>{ASTNode{NodeT
 	 	  ;
 phi: phi bool_op phi 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
    | psi 				                { $$ = $1; }
+   | NEGATION phi                       { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::Negation, "!"}}; n->insert(*$2); $$ = n; }
    | LPAREN phi RPAREN		            { auto* n = new Tree<ASTNode>{ASTNode{NodeType_t::SubExpr, "()"}}; n->insert(*$2); $$ = n; }
    | DEADLOCK 				            { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Deadlock, "deadlock"}}; }
    ;
