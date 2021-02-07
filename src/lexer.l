@@ -18,6 +18,8 @@ void ProvideToken() {
 %} 
 
 /* TODO: use %option reentrant to become threadsafe later (This will require some refactoring though) */
+%option nounistd
+%option never-interactive
 
 %%
 
