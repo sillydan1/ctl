@@ -4,7 +4,14 @@
 #include "parser.hpp"
 #include <cstring>
 
-int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead );
+extern int yyparse();
+#ifdef __APPLE__
+    #define num_bytes_read_t yy_size_t
+#else
+    #define num_bytes_read_t int
+#endif
+
+int readInputForLexer( char *buffer, num_bytes_read_t *numBytesRead, int maxBytesToRead );
 
 #undef YY_INPUT
 #define YY_INPUT(buf,result,maxsize) readInputForLexer(buf,&result,maxsize)
@@ -64,7 +71,7 @@ void scanMyThing(const std::string& ss) {
 	BEGIN (INITIAL); // Reset the parser
 }
 
-int readInputForLexer( char *buffer, int *numBytesRead, int maxBytesToRead ) {
+int readInputForLexer( char *buffer, num_bytes_read_t *numBytesRead, int maxBytesToRead ) {
     int numBytesToRead = maxBytesToRead;
     int bytesRemaining = strlen(globalInputText)-globalReadOffset;
     int i;
