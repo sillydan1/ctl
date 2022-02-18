@@ -61,6 +61,7 @@ phi: phi bool_op phi 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}
    | DEADLOCK 				            { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Deadlock, "deadlock"}}; }
    ;
 psi: expr comp_op expr 	                { auto* n = new Tree<ASTNode>{ASTNode{*$2}}; n->insert(*$1); n->insert(*$3); $$ = n; }
+   | comparable                         { $$ = $1; }
    | loc				                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Location, *$1}}; }
    ;
 comparable: var_ident 	                { $$ = new Tree<ASTNode>{ASTNode{NodeType_t::Var, *$1}}; }
