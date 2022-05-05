@@ -46,7 +46,7 @@ U 											{ ProvideToken(); return UNTIL; 				 }
 true|false									{ ProvideToken(); return LITERAL; 				 }
 [a-zA-Z_][a-zA-Z0-9_€ðđł]*(\([0-9]+\))?\.L[0-9]+ { ProvideToken(); return LOCATION; 			 }
 [a-zA-Z_][a-zA-Z0-9_€ðđł]*					{ ProvideToken(); return VAR_IDENTIFIER; 		 }
-[0-9]+										{ ProvideToken(); return LITERAL; 				 }
+(-)?[0-9]+										{ ProvideToken(); return LITERAL; 				 }
 (\"[\s]*.*?[\s]*\")							{ ProvideToken(); return LITERAL; 				 }
 (\+|\-|\*|\/)                               { ProvideToken(); return OPERATOR;               }
 \n 											{ ProvideToken(); return NL; 					 }
