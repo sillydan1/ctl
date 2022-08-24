@@ -1,4 +1,6 @@
 # CTLParser
+*This project is abandoned in favor of [ctl-expr](https://github.com/sillydan1/ctl-expr)*
+
 A simple parser for Computation Tree Logic. Use it in your C/C++ projects. 
 
 _Please note that the parser is not thread safe yet_
